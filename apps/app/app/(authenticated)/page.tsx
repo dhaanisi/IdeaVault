@@ -23,22 +23,30 @@ export const metadata: Metadata = {
 };
 
 const App = async () => {
-  const pages = await database.page.findMany();
   const { orgId } = await auth();
 
   if (!orgId) {
     notFound();
   }
 
+  let pages: { id: number; name: string }[] = [];
+
+  try {
+    pages = await database.page.findMany();
+  } catch (error) {
+    console.error("Failed to fetch pages:", error);
+    pages = [];
+  }
+
   return (
     <>
       <Header page="Data Fetching" pages={["Building Your Application"]}>
-        {env.LIVEBLOCKS_SECRET && (
+        {env.LIVEBLOCKS_SECRET ? (
           <CollaborationProvider orgId={orgId}>
             <AvatarStack />
             <Cursors />
           </CollaborationProvider>
-        )}
+        ) : null}
       </Header>
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">

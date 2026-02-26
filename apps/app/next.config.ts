@@ -14,4 +14,6 @@ if (env.ANALYZE === "true") {
   nextConfig = withAnalyzer(nextConfig);
 }
 
+nextConfig.serverExternalPackages = [];
+
 export default nextConfig;

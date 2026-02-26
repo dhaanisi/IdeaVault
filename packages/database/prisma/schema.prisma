@@ -6,6 +6,7 @@ generator client {
   output   = "../generated"
 }
 
+
 datasource db {
   provider     = "postgresql"
   relationMode = "prisma"
@@ -16,4 +17,12 @@ datasource db {
 model Page {
   id   Int    @id @default(autoincrement())
   name String
+}
+
+model User {
+  id        String    @id @default(cuid())
+  clerkId   String    @unique
+  email     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
