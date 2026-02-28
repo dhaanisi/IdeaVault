@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Header } from "./components/header";
 import Link from "next/link";
+import DeleteBtn from "./components/DeleteBtn";
+import EditBtn from "./components/EditBtn";
 
 const title = "Acme Inc";
 const description = "My application.";
@@ -35,11 +37,10 @@ let ideas: { id: string; title: string; content: string | null }[] = [];
   return (
     <>
       <Header page="Data Fetching" pages={["Building Your Application"]} />
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">...</div>
 
       <Link
         href="/ideas/new"
-        className="fixed right-8 bottom-8 flex h-14 w-14 items-center justify-center rounded-full bg-black text-2xl text-white shadow-lg transition-transform hover:scale-105"
+        className="fixed right-8 bottom-8 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-purple-900 to-indigo-900 text-2xl text-white transition-transform duration-200 hover:scale-105"
       >
         +
       </Link>
@@ -65,22 +66,16 @@ let ideas: { id: string; title: string; content: string | null }[] = [];
             </p>
           )}
 
-          <div className="mt-4 flex justify-end">
-            <Link
-              href={`/ideas/${idea.id}`}
-              className="rounded-full border border-white/20 px-4 py-1 text-xs text-white/70 transition hover:bg-white/10"
-            >
-              Edit
-            </Link>
+          <div className="mt-4 flex justify-end gap-2">
+            <EditBtn id={idea.id} />
+            <DeleteBtn id={idea.id} />
           </div>
+          
         </div>
       ))}
     </div>
   )}
 </div>
-      <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-      </div>
     </>
   );
 };

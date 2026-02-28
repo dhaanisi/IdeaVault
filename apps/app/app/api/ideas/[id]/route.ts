@@ -34,3 +34,32 @@ export async function PUT(
 
   return NextResponse.json(updatedIdea);
 }
+
+export async function DELETE(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+  ) {
+    const { id } = await context.params;
+
+    const { userId } = await auth();
+
+    if (!userId) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const existingIdea = await database.idea.findUnique({
+      where: { id },
+    });
+
+    if(!existingIdea || existingIdea.userId !== userId) {
+      return NextResponse.json({ message: "Not found" }, { status: 404 });
+    }
+
+    await database.idea.delete({
+      where: { id },
+    });
+    
+    return NextResponse.json({ message: "Idea deleted" });
+
+  }
+
