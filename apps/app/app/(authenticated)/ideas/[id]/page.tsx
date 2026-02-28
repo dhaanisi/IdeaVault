@@ -3,22 +3,26 @@ import { auth } from "@repo/auth/server";
 import { database } from "@repo/database";
 import EditIdeaForm from "./EditIdeaForm";
 
+
 interface PageProps {
-    params: {
+    params : Promise<{
         id: string;
-    };
+    }>
 }
 
 export default async function IdeaPage({params}: PageProps) {
-    const {userId} = await auth();
+    
+    const { id } = await params;
+    const { userId } = await auth();
 
-if(!userId) {
+    if(!userId) {
     notFound();
-}
+    }
 
 const idea = await database.idea.findFirstOrThrow({
     where:{
-        id: params.id,
+        id,
+        userId,
     },
 });
 
