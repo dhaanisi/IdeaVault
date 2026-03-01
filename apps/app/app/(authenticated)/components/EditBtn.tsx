@@ -17,9 +17,9 @@ export default function EditBtn({id}: EditBtnProps) {
     <button
       onClick={handleEdit}
       aria-label="Edit idea"
-      className="rounded-full border px-3 py-1 text-sm text-blue-400 transition hover:bg-blue-500/10"
+      className="rounded-full border px-3 py-1 text-sm text-shadow-white transition hover:bg-green-900"
     >
-      ✏️
+      Edit
     </button>
   );
 }

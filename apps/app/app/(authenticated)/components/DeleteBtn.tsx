@@ -19,9 +19,9 @@ export default function DeleteBtn({id}: DeleteBtnProps) {
     <button
       onClick={handleDelete}
       aria-label="Delete idea"
-      className="rounded-full border px-3 py-1 text-sm text-red-400 transition hover:bg-red-500/10 ml-2"
+      className="rounded-full border px-3 py-1 text-sm text-shadow-white transition hover:bg-red-900 ml-2"
     >
-      🗑️
+      Delete
     </button>
   );
     

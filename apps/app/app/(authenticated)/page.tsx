@@ -1,34 +1,28 @@
 import { auth } from "@repo/auth/server";
 import { database } from "@repo/database";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { Header } from "./components/header";
 import Link from "next/link";
 import DeleteBtn from "./components/DeleteBtn";
 import EditBtn from "./components/EditBtn";
 
-const title = "Acme Inc";
-const description = "My application.";
-
-export const metadata: Metadata = {
-  title,
-  description,
-};
 
 const App = async () => {
-  const { userId } = await auth();
+  const { userId: clerkId} = await auth();
+  const dbUser = await database.user.findFirstOrThrow({
+    where: { clerkId },
+  });
 
-  if (!userId) {
-    notFound();
-  }
 
-let ideas: { id: string; title: string; content: string | null }[] = [];
-  
+type IdeasWithTags = Awaited<ReturnType<typeof database.idea.findMany>>;
+let ideas: IdeasWithTags = [];
+ 
   try {
     ideas = await database.idea.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
+      where: { userId: dbUser.id },
+      include: { tags: true },
+      orderBy: { createdAt: "desc" }, 
     });
+  
   } catch (error) {
     console.error("Failed to fetch pages:", error);
     ideas = [];

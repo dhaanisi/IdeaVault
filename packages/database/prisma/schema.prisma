@@ -21,13 +21,13 @@ model Page {
 
 model User {
   id        String  @id @default(cuid())
-  clearkId  String  @unique
+  clerkId  String  @unique
 
   ideas Idea[]
 }
 
 model Idea{
-  id        String    @id @default(cuid())
+  id         String    @id @default(cuid())
   title      String 
   content    String?
   createdAt  DateTime  @default(now())
@@ -38,4 +38,14 @@ model Idea{
 
   @@index([userId])
 
+  tags     Tag[]    @relation("IdeaTags")
+}
+
+model Tag {
+  id      String    @id @default(cuid())
+  name    String
+  userId  String
+
+  ideas   Idea[]    @relation("IdeaTags")
+  @@unique([name, userId])
 }
