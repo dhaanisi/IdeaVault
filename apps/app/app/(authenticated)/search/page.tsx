@@ -23,9 +23,17 @@ export const generateMetadata = async ({
 const SearchPage = async ({ searchParams }: SearchPageProperties) => {
   const { q } = await searchParams;
 
-  const { userId } = await auth();
+  const { userId: clerkId } = await auth();
 
-  if (!userId) {
+  if (!clerkId) {
+    notFound();
+  }
+
+  const dbUser = await database.user.findUnique({
+    where: { clerkId },
+  });
+
+  if (!dbUser) {
     notFound();
   }
 
@@ -35,7 +43,7 @@ const SearchPage = async ({ searchParams }: SearchPageProperties) => {
 
   const ideas = await database.idea.findMany({
     where: {
-      userId,
+      userId: dbUser.id,
       OR: [
         { title: { contains: q, mode: "insensitive" } },
         { content: { contains: q, mode: "insensitive" } },

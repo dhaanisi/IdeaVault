@@ -5,31 +5,37 @@ import EditIdeaForm from "./EditIdeaForm";
 
 
 interface PageProps {
-    params : Promise<{
-        id: string;
-    }>
+  params: {
+    id: string;
+  };
 }
 
-export default async function IdeaPage({params}: PageProps) {
-    
-    const { id } = await params;
-    const { userId } = await auth();
+export default async function IdeaPage({ params }: PageProps) {
+  const { id } = params;
+  const { userId: clerkId } = await auth();
 
-    if(!userId) {
+  if (!clerkId) {
     notFound();
-    }
+  }
 
-const idea = await database.idea.findFirstOrThrow({
-    where:{
-        id,
-        userId,
+  const dbUser = await database.user.findUnique({
+    where: { clerkId },
+  });
+
+  if (!dbUser) {
+    notFound();
+  }
+
+  const idea = await database.idea.findFirst({
+    where: {
+      id,
+      userId: dbUser.id,
     },
-});
+  });
 
-
-if(!idea || idea.userId !== userId) {
+  if (!idea) {
     notFound();
-}
+  }
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-black p-6 text-white">

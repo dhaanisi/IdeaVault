@@ -8,9 +8,18 @@ import EditBtn from "./components/EditBtn";
 
 const App = async () => {
   const { userId: clerkId} = await auth();
-  const dbUser = await database.user.findFirstOrThrow({
-    where: { clerkId },
-  });
+  if(!clerkId) {
+    return null;
+  }
+  let dbUser = await database.user.findUnique({ where: { clerkId } });
+
+  if (!dbUser) {
+    dbUser = await database.user.create({
+      data: {
+        clerkId,
+      },
+    });
+  }
 
 
 type IdeasWithTags = Awaited<ReturnType<typeof database.idea.findMany>>;
@@ -19,8 +28,6 @@ let ideas: IdeasWithTags = [];
   try {
     ideas = await database.idea.findMany({
       where: { userId: dbUser.id },
-      include: { tags: true },
-      orderBy: { createdAt: "desc" }, 
     });
   
   } catch (error) {
