@@ -4,15 +4,22 @@ import { database } from "@repo/database";
 
 export async function GET() {
   try {
-    const { userId } = await auth();
-    console.log("Fetching tags for user:", userId);
+    const { userId: clerkId } = await auth();
+    console.log("Fetching tags for user:", clerkId);
 
-    if (!userId) {
+    if (!clerkId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
+    const dbUser = await database.user.findUnique({ where: { clerkId } });
+
+    if(!dbUser) { 
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
     const existingTags = await database.tag.findMany({
-      where: { userId },
+      where: { userId: dbUser.id
+       },
     });
 
     if (existingTags.length === 0) {
@@ -27,14 +34,14 @@ export async function GET() {
       await database.tag.createMany({
         data: defaultTags.map((tag) => ({
           ...tag,
-          userId,
+          userId: dbUser.id,
         })),
         skipDuplicates: true,
       });
     }
 
     const tags = await database.tag.findMany({
-      where: { userId },
+      where: { userId: dbUser.id },
       orderBy: { name: "asc" },
     });
 

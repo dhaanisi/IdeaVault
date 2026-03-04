@@ -22,14 +22,14 @@ const App = async () => {
   }
 
 
-type IdeasWithTags = Awaited<ReturnType<typeof database.idea.findMany>>;
-let ideas: IdeasWithTags = [];
+let ideas: any[]= [];
  
   try {
     ideas = await database.idea.findMany({
       where: { userId: dbUser.id },
+      include: { tags: true },
+      orderBy: { createdAt: "desc" },
     });
-  
   } catch (error) {
     console.error("Failed to fetch pages:", error);
     ideas = [];
@@ -47,17 +47,18 @@ let ideas: IdeasWithTags = [];
       </Link>
       <div className="p-6">
   {ideas.length === 0 ? (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white/60">
-      No ideas yet. Click + to create one.
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-neutral-900 p-10 text-center">
+      <p className="text-lg text-white/80">No ideas yet</p>
+      <p className="mt-2 text-sm text-white/50">Start capturing your thoughts by creating your first idea.</p>
     </div>
   ) : (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {ideas.map((idea) => (
         <div
           key={idea.id}
-          className="rounded-2xl border border-white/10 bg-neutral-900 p-6 shadow-lg transition hover:scale-[1.02] hover:border-white/20"
+          className="group rounded-2xl border border-white/10 bg-neutral-900/80 p-6 shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-white/20 hover:shadow-xl"
         >
-          <h2 className="text-lg font-semibold text-white">
+          <h2 className="text-lg font-semibold text-white group-hover:text-indigo-300 transition-colors">
             {idea.title}
           </h2>
 
@@ -66,8 +67,20 @@ let ideas: IdeasWithTags = [];
               {idea.content}
             </p>
           )}
+          {idea.tags && idea.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {idea.tags.map((tag: any) => (
+                <span
+                  key={tag.id}
+                  className="rounded-full bg-indigo-500/20 px-2 py-1 text-xs font-medium text-indigo-300"
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          )}
 
-          <div className="mt-4 flex justify-end gap-2">
+          <div className="mt-5 flex justify-end gap-2 border-t border-white/5 pt-4">
             <EditBtn id={idea.id} />
             <DeleteBtn id={idea.id} />
           </div>

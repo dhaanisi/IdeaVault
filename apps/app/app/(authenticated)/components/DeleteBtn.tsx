@@ -1,10 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 interface DeleteBtnProps {
     id: string;
 }
 
 export default function DeleteBtn({id}: DeleteBtnProps) {
+    const router = useRouter();
+
     const handleDelete = async () => {
         const condfirmDelete = confirm("Delete this idea?");
         if (!condfirmDelete) return;
@@ -12,7 +16,7 @@ export default function DeleteBtn({id}: DeleteBtnProps) {
         await fetch(`/api/ideas/${id}`, {
             method: "DELETE",
         });
-        window.location.reload();
+        router.refresh();
     };
 
     return(

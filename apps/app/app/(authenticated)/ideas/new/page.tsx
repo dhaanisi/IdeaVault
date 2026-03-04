@@ -22,14 +22,23 @@ export default function NewIdeaPage() {
     "bg-orange-600/20 text-orange-300 border-orange-500/30",
   ];
 
-  useEffect(()=>{
+  useEffect(() => {
     async function fetchTags() {
       const res = await fetch("/api/tags");
-      const data= await res.json();
-      setAvailableTags(data);
+      const data = await res.json();
+
+      // Ensure we always store an array
+      if (Array.isArray(data)) {
+        setAvailableTags(data);
+      } else if (Array.isArray(data.tags)) {
+        setAvailableTags(data.tags);
+      } else {
+        setAvailableTags([]);
+      }
     }
+
     fetchTags();
-  },[]);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
