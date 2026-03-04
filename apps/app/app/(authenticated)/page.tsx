@@ -6,11 +6,14 @@ import DeleteBtn from "./components/DeleteBtn";
 import EditBtn from "./components/EditBtn";
 
 
-const App = async () => {
+const App = async ({ searchParams }: { searchParams: Promise<{ tag?: string }> }) => {
   const { userId: clerkId} = await auth();
   if(!clerkId) {
     return null;
   }
+  const params = await searchParams;
+  const selectedTags = params?.tag;
+  const tag = params?.tag;
   let dbUser = await database.user.findUnique({ where: { clerkId } });
 
   if (!dbUser) {
@@ -20,16 +23,28 @@ const App = async () => {
       },
     });
   }
-
+  const tags = await database.tag.findMany({
+    where: { userId: dbUser.id },
+    orderBy: { name: "asc" },
+  });
 
 let ideas: any[]= [];
  
   try {
     ideas = await database.idea.findMany({
-      where: { userId: dbUser.id },
-      include: { tags: true },
-      orderBy: { createdAt: "desc" },
-    });
+  where: {
+    userId: dbUser.id,
+    ...(selectedTags && {
+      tags: {
+        some: {
+          name: selectedTags,
+        },
+      },
+    }),
+  },
+  include: { tags: true },
+  orderBy: { createdAt: "desc" },
+});
   } catch (error) {
     console.error("Failed to fetch pages:", error);
     ideas = [];

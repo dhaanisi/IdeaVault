@@ -53,7 +53,8 @@ import {
   Trash2Icon,
 } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState, type ReactNode } from "react";
 import { Search } from "./search";
 
 type GlobalSidebarProperties = {
@@ -191,6 +192,25 @@ const data = {
 
 export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
   const sidebar = useSidebar();
+  const searchParams = useSearchParams();
+  const activeTag = searchParams.get("tag");
+
+  const [tags, setTags] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await fetch("/api/tags");
+        if (!res.ok) return;
+        const data = await res.json();
+        setTags(data);
+      } catch (err) {
+        console.error("Failed to load tags", err);
+      }
+    };
+
+    fetchTags();
+  }, []);
 
   return (
     <>
@@ -259,51 +279,30 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
             </SidebarMenu>
           </SidebarGroup>
           <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-            <SidebarGroupLabel>Projects</SidebarGroupLabel>
+            <SidebarGroupLabel>Tags</SidebarGroupLabel>
             <SidebarMenu>
-              {data.projects.map((item) => (
-                <SidebarMenuItem key={item.name}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url}>
-                      <item.icon />
-                      <span>{item.name}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <SidebarMenuAction showOnHover>
-                        <MoreHorizontalIcon />
-                        <span className="sr-only">More</span>
-                      </SidebarMenuAction>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="end"
-                      className="w-48"
-                      side="bottom"
-                    >
-                      <DropdownMenuItem>
-                        <FolderIcon className="text-muted-foreground" />
-                        <span>View Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <ShareIcon className="text-muted-foreground" />
-                        <span>Share Project</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Trash2Icon className="text-muted-foreground" />
-                        <span>Delete Project</span>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </SidebarMenuItem>
-              ))}
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <MoreHorizontalIcon />
-                  <span>More</span>
+                <SidebarMenuButton asChild className={cn(!activeTag && "bg-muted font-medium")}>
+                  <Link href="/">
+                    <FolderIcon />
+                    <span>All Ideas</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              {tags.map((tag) => (
+                <SidebarMenuItem key={tag.id}>
+                  <SidebarMenuButton
+                    asChild
+                    className={cn(activeTag === tag.name && "bg-muted font-medium")}
+                  >
+                    <Link href={`/?tag=${encodeURIComponent(tag.name)}`}>
+                      <FolderIcon />
+                      <span>{tag.name}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroup>
           <SidebarGroup className="mt-auto">
