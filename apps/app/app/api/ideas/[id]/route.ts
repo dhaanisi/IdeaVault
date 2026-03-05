@@ -55,9 +55,13 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = context.params;
+  const { id: ideaId } = await params;
+
+  if (!ideaId) {
+    return NextResponse.json({ message: "Invalid idea id" }, { status: 400 });
+  }
 
   const { userId: clerkId } = await auth();
 
@@ -70,26 +74,29 @@ export async function DELETE(
   });
 
   if (!dbUser) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
+    return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
 
-  const existingIdea = await database.idea.findFirst({
+  const idea = await database.idea.findFirst({
     where: {
-      id,
+      id: ideaId,
       userId: dbUser.id,
     },
   });
 
-  if (!existingIdea) {
-    return NextResponse.json({ message: "Not found" }, { status: 404 });
+  if (!idea) {
+    return NextResponse.json(
+      { message: "Idea not found or not owned by user" },
+      { status: 404 }
+    );
   }
 
   try {
     await database.idea.delete({
-      where: { id: existingIdea.id },
+      where: { id: ideaId },
     });
 
-    return NextResponse.json({ message: "Idea deleted" });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("DELETE ERROR:", error);
     return NextResponse.json(
