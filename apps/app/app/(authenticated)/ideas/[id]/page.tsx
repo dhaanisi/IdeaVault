@@ -31,6 +31,9 @@ export default async function IdeaPage({ params }: PageProps) {
       id,
       userId: dbUser.id,
     },
+    include: {
+      tags: true,
+    },
   });
 
   if (!idea) {

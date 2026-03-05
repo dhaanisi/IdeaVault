@@ -3,7 +3,9 @@ import { database } from "@repo/database";
 import { Header } from "./components/header";
 import Link from "next/link";
 import DeleteBtn from "./components/DeleteBtn";
+
 import EditBtn from "./components/EditBtn";
+
 
 
 const App = async ({ searchParams }: { searchParams: Promise<{ tag?: string }> }) => {
@@ -87,7 +89,7 @@ let ideas: any[]= [];
               {idea.tags.map((tag: any) => (
                 <span
                   key={tag.id}
-                  className="rounded-full bg-indigo-500/20 px-2 py-1 text-xs font-medium text-indigo-300"
+                  className="rounded-full bg-white/10 px-2 py-1 text-xs font-medium"
                 >
                   {tag.name}
                 </span>

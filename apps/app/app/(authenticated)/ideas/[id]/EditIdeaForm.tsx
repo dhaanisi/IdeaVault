@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
+import DeleteBtn from "../../components/DeleteBtn";
 interface EditIdeaFormProps {
     idea: {
         id: string;
         title: string;
         content: string | null;
+        tags: { id: string; name: string }[];
     };
 }
 
@@ -17,6 +18,33 @@ export default function EditIdeaForm({ idea }: EditIdeaFormProps) {
     const [title, setTitle] = useState(idea.title);
     const [content, setContent] = useState(idea.content ?? "");
     const [loading, setLoading] = useState(false);
+    const [tags, setTags] = useState<string[]>(idea.tags?.map(t => t.id) || []);
+    const [availableTags, setAvailableTags] = useState<{ id: string; name: string }[]>(idea.tags ?? []);
+    const [showDropdown, setShowDropdown] = useState(false);
+
+    useEffect(() => {
+      async function loadTags() {
+        try {
+          const res = await fetch("/api/tags");
+          const data = await res.json();
+          setAvailableTags((prev) => {
+            const map = new Map(prev.map(t => [t.id, t]));
+            data.forEach((t: { id: string; name: string }) => map.set(t.id, t));
+            return Array.from(map.values());
+          });
+        } catch (err) {
+          console.error("Failed to load tags", err);
+        }
+      }
+
+      loadTags();
+    }, []);
+
+    useEffect(() => {
+      if (idea?.tags) {
+        setTags(idea.tags.map((t) => t.id));
+      }
+    }, [idea.tags]);
 
     async function handleSubmit(e:React.FormEvent){
         e.preventDefault();
@@ -26,11 +54,12 @@ export default function EditIdeaForm({ idea }: EditIdeaFormProps) {
             const res = await fetch(`/api/ideas/${idea.id}`,{
                 method: "PUT",
                 headers:{
-                    "Content-Type" : "applications/json",
+                    "Content-Type" : "application/json",
                 },
                 body: JSON.stringify({
                     title,
                     content,
+                    tags,
                 }),
             });
 
@@ -76,7 +105,58 @@ export default function EditIdeaForm({ idea }: EditIdeaFormProps) {
         rows={6}
       />
 
+      <div className="mt-3 flex flex-wrap gap-2">
+        {tags.map((tagId) => {
+          const tag = availableTags.find((t) => t.id === tagId) || idea.tags.find((t) => t.id === tagId);
+          if (!tag) return null;
+
+          return (
+            <span
+              key={tag.id}
+              className="flex items-center gap-1 rounded-full border border-white/20 px-2 py-1 text-xs"
+            >
+              {tag.name}
+              <button
+                type="button"
+                onClick={() => setTags(tags.filter((t) => t !== tag.id))}
+                className="ml-1 text-red-400"
+              >
+                ×
+              </button>
+            </span>
+          );
+        })}
+
+        <button
+          type="button"
+          onClick={() => setShowDropdown(!showDropdown)}
+          className="rounded-full border border-white/20 px-2 py-1 text-xs"
+        >
+          + Tag
+        </button>
+      </div>
+
+      {showDropdown && (
+        <div className="mt-2 rounded-lg border border-white/10 bg-neutral-800 p-2">
+          {availableTags
+            .filter((t) => !tags.includes(t.id))
+            .map((tag) => (
+              <div
+                key={tag.id}
+                onClick={() => {
+                  setTags([...tags, tag.id]);
+                  setShowDropdown(false);
+                }}
+                className="cursor-pointer rounded px-2 py-1 text-sm hover:bg-white/10"
+              >
+                {tag.name}
+              </div>
+            ))}
+        </div>
+      )}
+
       <div className="mt-4 flex justify-end gap-3">
+        <DeleteBtn id={idea.id} />
         <button
           type="button"
           onClick={() => router.push("/")}

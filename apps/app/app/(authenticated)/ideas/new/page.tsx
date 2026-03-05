@@ -14,14 +14,6 @@ export default function NewIdeaPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const tagColors = [
-    "bg-purple-600/20 text-purple-300 border-purple-500/30",
-    "bg-pink-600/20 text-pink-300 border-pink-500/30",
-    "bg-blue-600/20 text-blue-300 border-blue-500/30",
-    "bg-emerald-600/20 text-emerald-300 border-emerald-500/30",
-    "bg-orange-600/20 text-orange-300 border-orange-500/30",
-  ];
-
   useEffect(() => {
     async function fetchTags() {
       const res = await fetch("/api/tags");
@@ -94,56 +86,56 @@ export default function NewIdeaPage() {
           rows={6}
         />
 
-        <div className="relative mt-4">
-  <button
-    type="button"
-    onClick={() => setShowDropdown(!showDropdown)}
-    className="w-full rounded-xl border border-white/10 bg-neutral-900 px-4 py-2 text-left text-sm text-white"
-  >
-    {selectedTags.length > 0 ? (
-      <div className="flex flex-wrap gap-2">
-        {availableTags
-          .filter((tag) => selectedTags.includes(tag.id))
-          .map((tag, index) => (
-            <span
-              key={tag.id}
-              className={`rounded-full border px-3 py-1 text-xs ${
-                tagColors[index % tagColors.length]
-              }`}
-            >
-              {tag.name}
-            </span>
-          ))}
-      </div>
-    ) : (
-      "Select tags"
-    )}
-  </button>
+        <div className="mt-4">
+  <div className="flex flex-wrap gap-2">
+    {selectedTags.map((tagId) => {
+      const tag = availableTags.find((t) => t.id === tagId);
+      if (!tag) return null;
 
-  {showDropdown && (
-    <div className="absolute z-10 mt-2 w-full rounded-xl border border-white/10 bg-neutral-950 p-2">
-      {availableTags.map((tag) => (
-        <div
+      return (
+        <span
           key={tag.id}
-          onClick={() => {
-            if (selectedTags.includes(tag.id)) {
-              setSelectedTags(selectedTags.filter((id) => id !== tag.id));
-            } else {
-              setSelectedTags([...selectedTags, tag.id]);
-            }
-          }}
-          className={`cursor-pointer rounded-lg px-3 py-2 text-sm border ${
-            selectedTags.includes(tag.id)
-              ? tagColors[
-                  availableTags.findIndex((t) => t.id === tag.id) %
-                    tagColors.length
-                ]
-              : "border-transparent hover:bg-white/10"
-          }`}
+          className="flex items-center gap-1 rounded-full bg-white/10 px-2 py-1 text-xs"
         >
           {tag.name}
-        </div>
-      ))}
+          <button
+            type="button"
+            onClick={() =>
+              setSelectedTags(selectedTags.filter((id) => id !== tag.id))
+            }
+            className="ml-1 text-red-400"
+          >
+            ×
+          </button>
+        </span>
+      );
+    })}
+
+    <button
+      type="button"
+      onClick={() => setShowDropdown(!showDropdown)}
+      className="rounded-full border border-white/20 px-2 py-1 text-xs"
+    >
+      + Tag
+    </button>
+  </div>
+
+  {showDropdown && (
+    <div className="mt-2 rounded-lg border border-white/10 bg-neutral-800 p-2">
+      {availableTags
+        .filter((tag) => !selectedTags.includes(tag.id))
+        .map((tag) => (
+          <div
+            key={tag.id}
+            onClick={() => {
+              setSelectedTags([...selectedTags, tag.id]);
+              setShowDropdown(false);
+            }}
+            className="cursor-pointer rounded px-2 py-1 text-sm hover:bg-white/10"
+          >
+            {tag.name}
+          </div>
+        ))}
     </div>
   )}
 </div>

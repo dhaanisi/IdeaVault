@@ -23,7 +23,7 @@ export async function PUT(
 
   const body = await req.json();
   console.log("BODY: ", body);
-  const { title, content } = body;
+  const { title, content, tags } = body;
 
   const existingIdea = await database.idea.findFirst({
     where: {
@@ -44,6 +44,11 @@ export async function PUT(
       data: {
         title,
         content,
+        tags: {
+          set: Array.isArray(tags)
+            ? tags.map((tagId: string) => ({ id: tagId }))
+            : [],
+        },
       },
     });
     return NextResponse.json(updatedIdea);  
