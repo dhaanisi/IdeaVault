@@ -97,9 +97,12 @@ export async function DELETE(
   }
 
   try {
-    await database.idea.delete({
-      where: { id: ideaId },
-    });
+    await database.idea.update({
+  where: { id: ideaId },
+  data: {
+    deleted: true
+  }
+});
 
     return NextResponse.json({ success: true });
   } catch (error) {

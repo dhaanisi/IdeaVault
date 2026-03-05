@@ -37,20 +37,13 @@ import { cn } from "@repo/design-system/lib/utils";
 import { NotificationsTrigger } from "@repo/notifications/components/trigger";
 import {
   AnchorIcon,
-  BookOpenIcon,
-  BotIcon,
-  ChevronRightIcon,
   FolderIcon,
-  FrameIcon,
   LifeBuoyIcon,
-  MapIcon,
   MoreHorizontalIcon,
-  PieChartIcon,
   SendIcon,
-  Settings2Icon,
   ShareIcon,
-  SquareTerminalIcon,
   Trash2Icon,
+  SettingsIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -71,121 +64,40 @@ const data = {
     {
       title: "Playground",
       url: "#",
-      icon: SquareTerminalIcon,
+      icon: null,
       isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: BotIcon,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpenIcon,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2Icon,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
+      items: [],
     },
   ],
   navSecondary: [
+   
     {
-      title: "Webhooks",
-      url: "/webhooks",
-      icon: AnchorIcon,
+      title: "Trash",
+      url: "/trash",
+      icon: Trash2Icon,
     },
     {
-      title: "Support",
-      url: "#",
-      icon: LifeBuoyIcon,
+      title: "Settings",
+      url: "/settings",
+      icon: SettingsIcon,
     },
-    {
-      title: "Feedback",
-      url: "#",
-      icon: SendIcon,
-    },
+
   ],
   projects: [
     {
       name: "Design Engineering",
       url: "#",
-      icon: FrameIcon,
+      icon: null,
     },
     {
       name: "Sales & Marketing",
       url: "#",
-      icon: PieChartIcon,
+      icon: null,
     },
     {
       name: "Travel",
       url: "#",
-      icon: MapIcon,
+      icon: null,
     },
   ],
 };
@@ -234,50 +146,6 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
         </SidebarHeader>
         <Search />
         <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
-            <SidebarMenu>
-              {data.navMain.map((item) => (
-                <Collapsible
-                  asChild
-                  defaultOpen={item.isActive}
-                  key={item.title}
-                >
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip={item.title}>
-                      <Link href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                    {item.items?.length ? (
-                      <>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuAction className="data-[state=open]:rotate-90">
-                            <ChevronRightIcon />
-                            <span className="sr-only">Toggle</span>
-                          </SidebarMenuAction>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          <SidebarMenuSub>
-                            {item.items?.map((subItem) => (
-                              <SidebarMenuSubItem key={subItem.title}>
-                                <SidebarMenuSubButton asChild>
-                                  <Link href={subItem.url}>
-                                    <span>{subItem.title}</span>
-                                  </Link>
-                                </SidebarMenuSubButton>
-                              </SidebarMenuSubItem>
-                            ))}
-                          </SidebarMenuSub>
-                        </CollapsibleContent>
-                      </>
-                    ) : null}
-                  </SidebarMenuItem>
-                </Collapsible>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
           <SidebarGroup className="group-data-[collapsible=icon]:hidden">
             <SidebarGroupLabel>Tags</SidebarGroupLabel>
             <SidebarMenu>
@@ -289,6 +157,8 @@ export const GlobalSidebar = ({ children }: GlobalSidebarProperties) => {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+            
 
               {tags.map((tag) => (
                 <SidebarMenuItem key={tag.id}>
