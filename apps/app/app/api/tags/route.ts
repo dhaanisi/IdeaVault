@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@repo/auth/server";
 import { database } from "@repo/database";
+import { headers } from "next/headers";
 
 export async function GET() {
   try {
@@ -48,6 +49,40 @@ export async function GET() {
     return NextResponse.json(tags);
   } catch (error) {
     console.error("TAG API ERROR:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const { userId: clerkId } = await auth();
+
+    if (!clerkId) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const dbUser = await database.user.findUnique({ where: { clerkId } });
+
+    if (!dbUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const body = await req.json();
+
+    if (!body?.name || typeof body.name !== "string") {
+      return NextResponse.json({ message: "Tag name required" }, { status: 400 });
+    }
+
+    const tag = await database.tag.create({
+      data: {
+        name: body.name.trim(),
+        userId: dbUser.id,
+      },
+    });
+
+    return NextResponse.json(tag);
+  } catch (error) {
+    console.error("CREATE TAG ERROR:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
