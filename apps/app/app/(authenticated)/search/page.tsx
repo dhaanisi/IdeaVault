@@ -49,6 +49,7 @@ const SearchPage = async ({ searchParams }: SearchPageProperties) => {
         { content: { contains: q, mode: "insensitive" } },
       ],
     },
+    include: { tags: true },
     orderBy: { createdAt: "desc" },
   });
 
@@ -56,19 +57,33 @@ const SearchPage = async ({ searchParams }: SearchPageProperties) => {
     <>
       <Header page="Search" pages={["Ideas"]} />
       <div className="p-6">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
           {ideas.map((idea) => (
             <div
               key={idea.id}
-              className="rounded-2xl border border-white/10 bg-neutral-900 p-5"
+              className="group mb-6 break-inside-avoid flex flex-col rounded-2xl border border-white/10 bg-neutral-900/80 p-6 shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl hover:bg-neutral-900"
             >
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-white transition-colors group-hover:text-indigo-300">
                 {idea.title}
               </h3>
+
               {idea.content && (
-                <p className="mt-2 text-sm text-white/60">
+                <p className="mt-3 text-sm leading-relaxed text-white/70 line-clamp-6 break-words">
                   {idea.content}
                 </p>
+              )}
+
+              {idea.tags && idea.tags.length > 0 && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {idea.tags.map((tag) => (
+                    <span
+                      key={tag.id}
+                      className="rounded-md border border-white/10 px-2 py-1 text-xs text-white/70"
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
           ))}

@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { env } from "@/env";
 import { NotificationsProvider } from "./components/notifications-provider";
 import { GlobalSidebar } from "./components/sidebar";
+import CommandPalette from "./components/command-palette";
 import {  Toaster } from "sonner";
 type AppLayoutProperties = {
   readonly children: ReactNode;
@@ -36,6 +37,9 @@ const AppLayout = async ({ children }: AppLayoutProperties) => {
           {children}
         </GlobalSidebar>
       </SidebarProvider>
+
+      <CommandPalette />
+
       <Toaster richColors position="bottom-right" />
     </NotificationsProvider>
   );

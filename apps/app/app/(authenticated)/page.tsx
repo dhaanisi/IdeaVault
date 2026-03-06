@@ -3,17 +3,17 @@ import { database } from "@repo/database";
 import { Header } from "./components/header";
 import Link from "next/link";
 import DeleteBtn from "./components/DeleteBtn";
-
 import EditBtn from "./components/EditBtn";
 
 
 
-const App = async ({ searchParams }: { searchParams: Promise<{ tag?: string }> }) => {
+const App = async ({ searchParams }: { searchParams: Promise<{ tag?: string; sort?: string }> }) => {
   const { userId: clerkId} = await auth();
   if(!clerkId) {
     return null;
   }
   const params = await searchParams;
+  const sort = params?.sort || "new";
   const selectedTags = params?.tag;
   const tag = params?.tag;
   let dbUser = await database.user.findUnique({ where: { clerkId } });
@@ -33,6 +33,19 @@ const App = async ({ searchParams }: { searchParams: Promise<{ tag?: string }> }
 let ideas: any[]= [];
  
   try {
+    let orderBy: any = { createdAt: "desc" };
+
+    if (sort === "old") {
+      orderBy = { createdAt: "asc" };
+    }
+
+    if (sort === "az") {
+      orderBy = { title: "asc" };
+    }
+
+    if (sort === "za") {
+      orderBy = { title: "desc" };
+    }
     ideas = await database.idea.findMany({
   where: {
     userId: dbUser.id,
@@ -46,7 +59,7 @@ let ideas: any[]= [];
     }),
   },
   include: { tags: true },
-  orderBy: { createdAt: "desc" },
+  orderBy,
 });
   } catch (error) {
     console.error("Failed to fetch pages:", error);
@@ -64,30 +77,46 @@ let ideas: any[]= [];
         +
       </Link>
       <div className="p-6">
+  <div className="mb-4 flex justify-end">
+    <div className="flex gap-2 text-xs text-white/70">
+      <Link href="/?sort=new" className={`px-2 py-1 rounded border border-white/10 ${sort === "new" ? "bg-white/10 text-white" : "hover:bg-white/5"}`}>
+        Newest
+      </Link>
+      <Link href="/?sort=old" className={`px-2 py-1 rounded border border-white/10 ${sort === "old" ? "bg-white/10 text-white" : "hover:bg-white/5"}`}>
+        Oldest
+      </Link>
+      <Link href="/?sort=az" className={`px-2 py-1 rounded border border-white/10 ${sort === "az" ? "bg-white/10 text-white" : "hover:bg-white/5"}`}>
+        A‑Z
+      </Link>
+      <Link href="/?sort=za" className={`px-2 py-1 rounded border border-white/10 ${sort === "za" ? "bg-white/10 text-white" : "hover:bg-white/5"}`}>
+        Z‑A
+      </Link>
+    </div>
+  </div>
   {ideas.length === 0 ? (
     <div className="flex h-[60vh] flex-col items-center justify-center text-center">
       <p className="text-lg text-white">No ideas yet</p>
       <p className="mt-2 text-sm text-white/40">
         Start capturing your thoughts by creating your first idea.
       </p>
+      <p className="mt-3 text-xs text-white/30">
+        Tip: Press ⌘K to quickly search or create ideas
+      </p>
     </div>
   ) : (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  
+    <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
       {ideas.map((idea) => (
         <div
           key={idea.id}
-          className="group flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-neutral-900/80 p-6 shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-white/20 hover:shadow-xl"
+          className="group mb-6 break-inside-avoid flex flex-col rounded-2xl border border-white/10 bg-neutral-900/80 p-6 shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl hover:bg-neutral-900"
         >
           <div>
             <h2 className="text-lg font-semibold text-white transition-colors group-hover:text-indigo-300">
               {idea.title}
             </h2>
-            <p className="mt-1 text-xs text-white/40">
-              {new Date(idea.createdAt).toLocaleDateString()}
-            </p>
-
             {idea.content && (
-              <p className="mt-3 text-sm leading-relaxed text-white/70 line-clamp-4">
+              <p className="mt-3 text-sm leading-relaxed text-white/70 line-clamp-6 break-words">
                 {idea.content}
               </p>
             )}
