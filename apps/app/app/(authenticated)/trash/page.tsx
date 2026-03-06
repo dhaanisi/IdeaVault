@@ -1,6 +1,8 @@
 import { database } from "@repo/database";
 import { auth } from "@repo/auth/server";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
 
 export default async function TrashPage() {
   const { userId: clerkId } = await auth();
@@ -40,6 +42,11 @@ export default async function TrashPage() {
     revalidatePath("/trash");
   }
 
+  async function cancelDelete() {
+    "use server";
+    redirect("/trash");
+  }
+
   return (
     <div className="p-6">
       <h1 className="text-xl font-semibold mb-6">Trash</h1>
@@ -68,14 +75,43 @@ export default async function TrashPage() {
                     </button>
                   </form>
 
-                  <form action={deleteForever.bind(null, idea.id)}>
-                    <button
-                      type="submit"
-                      className="text-red-400 hover:text-red-500"
-                    >
+                  <details className="relative">
+                    <summary className="cursor-pointer list-none text-red-400 hover:text-red-500">
                       Delete forever
-                    </button>
-                  </form>
+                    </summary>
+
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                      <div className="w-72 rounded-xl border border-white/10 bg-[#0f0f10] p-5 shadow-2xl">
+                        <p className="text-sm text-white/80 mb-3">
+                          Permanently delete this idea?
+                        </p>
+
+                        <p className="text-xs text-white/40 mb-5">
+                          This action cannot be undone.
+                        </p>
+
+                        <div className="flex items-center justify-end gap-2">
+                          <form action={cancelDelete}>
+                            <button
+                              type="submit"
+                              className="cursor-pointer rounded-md px-3 py-1 text-xs text-white/60 hover:bg-white/10 hover:text-white"
+                            >
+                              Cancel
+                            </button>
+                          </form>
+
+                          <form action={deleteForever.bind(null, idea.id)}>
+                            <button
+                              type="submit"
+                              className="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs text-red-400 hover:bg-red-500/20"
+                            >
+                              Delete
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </details>
                 </div>
               </div>
             </div>

@@ -1,6 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
 
 interface DeleteBtnProps {
     id: string;
@@ -10,22 +12,23 @@ export default function DeleteBtn({id}: DeleteBtnProps) {
     const router = useRouter();
 
     const handleDelete = async () => {
-        const confirmDelete = confirm("Delete this idea?");
+        const confirmDelete = window.confirm("Are you sure you want to delete this idea?");
         if (!confirmDelete) return;
-        console.log("Deleting idea with id:", id);
+
+        const loadingToast = toast.loading("Deleting idea...");
 
         const res = await fetch(`/api/ideas/${id}`, {
           method: "DELETE",
         });
-        console.log("Delete response status:", res.status);
 
         if (!res.ok) {
           const text = await res.text();
           console.error("Delete failed:", text);
-          alert("Failed to delete idea. Check console for details.");
+          toast.error("Failed to delete idea", { id: loadingToast });
           return;
         }
 
+        toast.success("Idea moved to Trash", { id: loadingToast });
         router.refresh();
     };
 
@@ -34,9 +37,9 @@ export default function DeleteBtn({id}: DeleteBtnProps) {
       type="button"
       onClick={handleDelete}
       aria-label="Delete idea"
-      className="rounded-full border px-3 py-1 text-sm text-shadow-white transition hover:bg-red-900 ml-2"
+      className="rounded-md border border-white/10 px-3 py-1 text-sm text-white/70 transition hover:bg-red-500/10 hover:text-red-400 ml-2"
     >
-      Delete
+      <Trash2Icon className="h-4 w-4" />
     </button>
   );
     
