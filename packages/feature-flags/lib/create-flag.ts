@@ -10,11 +10,11 @@ export const createFlag = (key: string) =>
       const { userId } = await auth();
 
       if (!userId) {
-        return this.defaultValue as boolean;
+        return false;
       }
 
-      const isEnabled = await analytics.isFeatureEnabled(key, userId);
+      const isEnabled = await analytics?.isFeatureEnabled(key, userId);
 
-      return isEnabled ?? (this.defaultValue as boolean);
+      return isEnabled ?? false;
     },
   });
