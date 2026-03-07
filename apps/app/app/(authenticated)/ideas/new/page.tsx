@@ -13,6 +13,7 @@ export default function NewIdeaPage() {
   const [availableTags, setAvailableTags] = useState<{ id: string; name: string }[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const[newTag, setNewTag] = useState("");
 
   useEffect(() => {
     async function fetchTags() {
@@ -120,24 +121,65 @@ export default function NewIdeaPage() {
     </button>
   </div>
 
-  {showDropdown && (
-    <div className="mt-2 rounded-lg border border-white/10 bg-neutral-800 p-2">
-      {availableTags
-        .filter((tag) => !selectedTags.includes(tag.id))
-        .map((tag) => (
-          <div
-            key={tag.id}
-            onClick={() => {
-              setSelectedTags([...selectedTags, tag.id]);
-              setShowDropdown(false);
-            }}
-            className="cursor-pointer rounded px-2 py-1 text-sm hover:bg-white/10"
-          >
-            {tag.name}
-          </div>
-        ))}
-    </div>
-  )}
+{showDropdown && (
+  <div className="mt-2 rounded-lg border border-white/10 bg-neutral-800 p-2">
+    
+    {/* Tag search / input */}
+    <input
+      value={newTag}
+      onChange={(e) => setNewTag(e.target.value)}
+      placeholder="Search or create tag"
+      className="mb-2 w-full rounded bg-black/40 px-2 py-1 text-sm outline-none"
+    />
+
+    {/* Existing tags */}
+    {availableTags
+      .filter(
+        (tag) =>
+          !selectedTags.includes(tag.id) &&
+          tag.name.toLowerCase().includes(newTag.toLowerCase())
+      )
+      .map((tag) => (
+        <div
+          key={tag.id}
+          onClick={() => {
+            setSelectedTags([...selectedTags, tag.id]);
+            setShowDropdown(false);
+            setNewTag("");
+          }}
+          className="cursor-pointer rounded px-2 py-1 text-sm hover:bg-white/10"
+        >
+          {tag.name}
+        </div>
+      ))}
+
+    {/* Create new tag */}
+    {newTag.trim() !== "" &&
+      !availableTags.some(
+        (tag) => tag.name.toLowerCase() === newTag.toLowerCase()
+      ) && (
+        <div
+          onClick={async () => {
+            const res = await fetch("/api/tags", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name: newTag }),
+            });
+
+            const tag = await res.json();
+
+            setAvailableTags([...availableTags, tag]);
+            setSelectedTags([...selectedTags, tag.id]);
+            setNewTag("");
+            setShowDropdown(false);
+          }}
+          className="cursor-pointer rounded px-2 py-1 text-sm text-green-400 hover:bg-white/10"
+        >
+          + Create "{newTag}"
+        </div>
+      )}
+  </div>
+)}
 </div>
 
         <div className="mt-4 flex justify-end gap-3">

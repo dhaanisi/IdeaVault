@@ -21,6 +21,7 @@ export default function EditIdeaForm({ idea }: EditIdeaFormProps) {
     const [tags, setTags] = useState<string[]>(idea.tags?.map(t => t.id) || []);
     const [availableTags, setAvailableTags] = useState<{ id: string; name: string }[]>(idea.tags ?? []);
     const [showDropdown, setShowDropdown] = useState(false);
+    const [newTag, setNewTag] = useState("");
 
     useEffect(() => {
       async function loadTags() {
@@ -138,20 +139,57 @@ export default function EditIdeaForm({ idea }: EditIdeaFormProps) {
 
       {showDropdown && (
         <div className="mt-2 rounded-lg border border-white/10 bg-neutral-800 p-2">
+          <input
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+            placeholder="Search or create tag"
+            className="mb-2 w-full rounded bg-black/40 px-2 py-1 text-sm outline-none"
+          />
+
           {availableTags
-            .filter((t) => !tags.includes(t.id))
+            .filter(
+              (t) =>
+                !tags.includes(t.id) &&
+                t.name.toLowerCase().includes(newTag.toLowerCase())
+            )
             .map((tag) => (
               <div
                 key={tag.id}
                 onClick={() => {
                   setTags([...tags, tag.id]);
                   setShowDropdown(false);
+                  setNewTag("");
                 }}
                 className="cursor-pointer rounded px-2 py-1 text-sm hover:bg-white/10"
               >
                 {tag.name}
               </div>
             ))}
+
+          {newTag.trim() !== "" &&
+            !availableTags.some(
+              (t) => t.name.toLowerCase() === newTag.toLowerCase()
+            ) && (
+              <div
+                onClick={async () => {
+                  const res = await fetch("/api/tags", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: newTag }),
+                  });
+
+                  const tag = await res.json();
+
+                  setAvailableTags([...availableTags, tag]);
+                  setTags([...tags, tag.id]);
+                  setNewTag("");
+                  setShowDropdown(false);
+                }}
+                className="cursor-pointer rounded px-2 py-1 text-sm text-green-400 hover:bg-white/10"
+              >
+                + Create "{newTag}"
+              </div>
+            )}
         </div>
       )}
 

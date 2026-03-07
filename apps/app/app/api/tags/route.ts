@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@repo/auth/server";
 import { database } from "@repo/database";
 import { headers } from "next/headers";
+import { success } from "zod";
 
 export async function GET() {
   try {
@@ -25,11 +26,11 @@ export async function GET() {
 
     if (existingTags.length === 0) {
       const defaultTags = [
-        { name: "Personal", color: "bg-purple-600/20 text-purple-300 border-purple-500/30" },
-        { name: "Startup", color: "bg-pink-600/20 text-pink-300 border-pink-500/30" },
-        { name: "Film", color: "bg-blue-600/20 text-blue-300 border-blue-500/30" },
-        { name: "Health", color: "bg-emerald-600/20 text-emerald-300 border-emerald-500/30" },
-        { name: "Random", color: "bg-orange-600/20 text-orange-300 border-orange-500/30" },
+        {name: "Personal"},
+        {name: "Startup"},
+        {name: "Film"},
+        {name: "Health"},
+        {name: "Random"},
       ];
 
       await database.tag.createMany({
@@ -68,6 +69,19 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+    if (!body?.name || typeof body.name !== "string"){
+      return NextResponse.json({message: "Tag name required"}, {status:400});
+    }
+
+    const existing = await database.tag.findFirst({
+      where:{
+        userId: dbUser.id,
+        name: body.name.trim(),
+      },
+    });
+    if(existing){
+      return NextResponse.json(existing);
+    }
 
     if (!body?.name || typeof body.name !== "string") {
       return NextResponse.json({ message: "Tag name required" }, { status: 400 });
@@ -80,9 +94,54 @@ export async function POST(req: Request) {
       },
     });
 
+
+
     return NextResponse.json(tag);
   } catch (error) {
     console.error("CREATE TAG ERROR:", error);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
+}
+
+export async function DELETE(req: Request) {
+  try{
+    const {userId:clerkId} = await auth();
+
+    if(!clerkId){
+      return NextResponse.json({message: "Unauthorized"}, {status:401});
+    }
+
+    const dbUser = await database.user.findUnique({where: {clerkId}});
+
+    if(!dbUser) {
+      return  NextResponse.json({message: "User not found"}, {status:404});
+    }
+
+    const {id} = await req.json();
+
+    if (!id){
+      return NextResponse.json({message: "Tag id required"}, {status: 400});
+    }
+
+    await database.tag.delete({
+      where:{id},
+    });
+    return NextResponse.json({success:true});
+  }
+  catch(error){
+    console.error("DELETE TAG ERROR:", error);
+    return NextResponse.json({message: "Internal Server Error"},{status:500})
+  }
+}
+
+export async function PATCH(req: Request) {
+  const {id, name} = await req.json();
+
+  const tag = await database.tag.update({
+    where: { id },
+    data: {name},
+  });
+
+  return NextResponse.json(tag);
+  
 }
