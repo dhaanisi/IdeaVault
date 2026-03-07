@@ -75,6 +75,10 @@ export const POST = async (request: Request): Promise<Response> => {
       throw new Error("missing stripe-signature header");
     }
 
+    if (!stripe) {
+      return NextResponse.json({ message: "Stripe not configured", ok: false });
+    }
+
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
