@@ -32,8 +32,8 @@ export const contact = async (
     }
 
     await resend.emails.send({
-      from: env.RESEND_FROM,
-      to: env.RESEND_FROM,
+      from: env.RESEND_FROM!,
+      to: env.RESEND_FROM!,
       subject: "Contact form submission",
       replyTo: email,
       react: <ContactTemplate email={email} message={message} name={name} />,
