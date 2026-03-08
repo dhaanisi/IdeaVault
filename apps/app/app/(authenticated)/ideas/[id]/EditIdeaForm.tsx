@@ -42,10 +42,14 @@ export default function EditIdeaForm({ idea }: EditIdeaFormProps) {
     }, []);
 
     useEffect(() => {
-      if (idea?.tags) {
-        setTags(idea.tags.map((t) => t.id));
-      }
-    }, [idea.tags]);
+      setTitle(idea.title);
+      setContent(idea.content ?? "");
+      setTags(idea.tags?.map((t) => t.id) || []);
+      setAvailableTags(idea.tags ?? []);
+      setShowDropdown(false);
+      setNewTag("");
+      setLoading(false);
+    }, [idea.id]);
 
     async function handleSubmit(e:React.FormEvent){
         e.preventDefault();

@@ -3,15 +3,17 @@ import { auth } from "@repo/auth/server";
 import { database } from "@repo/database";
 import EditIdeaForm from "./EditIdeaForm";
 
+export const dynamic = "force-dynamic";
+
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function IdeaPage({ params }: PageProps) {
-  const { id } = params;
+  const { id } = await params;
   const { userId: clerkId } = await auth();
 
   if (!clerkId) {
@@ -42,7 +44,7 @@ export default async function IdeaPage({ params }: PageProps) {
 
   return (
     <div className="flex min-h-screen items-start justify-center bg-black p-6 text-white">
-      <EditIdeaForm idea={idea} />
+      <EditIdeaForm key={idea.id} idea={idea} />
     </div>
   );
 }
