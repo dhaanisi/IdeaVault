@@ -95,7 +95,7 @@ export default function NewIdeaPage() {
 
       return (
         <span
-          key={tag.id}
+          key={tagId}
           className="flex items-center gap-1 rounded-full bg-white/10 px-2 py-1 text-xs"
         >
           {tag.name}
