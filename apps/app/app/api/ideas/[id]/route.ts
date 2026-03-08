@@ -4,9 +4,9 @@ import { database } from "@repo/database";
 
 export async function PUT(
   req: Request,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = context.params;
+  const { id } = await context.params;
   const { userId: clerkId } = await auth();
 
   if (!clerkId) {
@@ -60,9 +60,9 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id: ideaId } = params;
+  const { id: ideaId } = await params;
 
   if (!ideaId) {
     return NextResponse.json({ message: "Invalid idea id" }, { status: 400 });
