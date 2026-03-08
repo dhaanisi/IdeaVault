@@ -62,7 +62,7 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const { id: ideaId } = await params;
+  const { id: ideaId } = params;
 
   if (!ideaId) {
     return NextResponse.json({ message: "Invalid idea id" }, { status: 400 });
