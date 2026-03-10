@@ -156,8 +156,10 @@ const App = async ({
               {ideas.map((idea) => (
                 <div
                   key={idea.id}
-                  className="group mb-5 break-inside-avoid rounded-2xl border border-white/[0.08] bg-neutral-900/60 p-5 shadow-lg backdrop-blur-sm transition-all duration-200 ease-out hover:-translate-y-1 hover:border-indigo-500/30 hover:bg-neutral-800/70 hover:shadow-indigo-950/40"
+                  className="group relative mb-5 break-inside-avoid rounded-2xl border border-white/[0.07] bg-neutral-900/60 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-2 hover:border-indigo-500/40 hover:bg-neutral-800/80 hover:shadow-[0_8px_32px_rgba(99,102,241,0.15),0_2px_8px_rgba(0,0,0,0.5)]"
                 >
+                  {/* Top glow edge on hover */}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px rounded-t-2xl bg-gradient-to-r from-transparent via-indigo-400/0 to-transparent transition-all duration-300 group-hover:via-indigo-400/50" />
                   <h2 className="text-sm font-semibold leading-snug text-white/90 transition-colors duration-200 group-hover:text-white">
                     {idea.title}
                   </h2>
