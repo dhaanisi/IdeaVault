@@ -7,13 +7,13 @@ export const dynamic = "force-dynamic";
 
 
 interface PageProps {
-  params: Promise<{
+  params: {
     id: string;
-  }>;
+  };
 }
 
 export default async function IdeaPage({ params }: PageProps) {
-  const { id } = await params;
+  const { id } = params;
   const { userId: clerkId } = await auth();
 
   if (!clerkId) {

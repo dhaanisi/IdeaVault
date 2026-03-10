@@ -109,10 +109,10 @@ let ideas: any[]= [];
       {ideas.map((idea) => (
         <div
           key={idea.id}
-          className="group mb-6 break-inside-avoid flex flex-col rounded-2xl border border-white/10 bg-neutral-900/80 p-6 shadow-lg backdrop-blur transition-all duration-200 hover:-translate-y-1 hover:border-white/20 hover:shadow-2xl hover:bg-neutral-900"
+          className="group mb-6 break-inside-avoid flex flex-col rounded-2xl border border-white/10 bg-neutral-900/70 p-6 shadow-md backdrop-blur transition-all duration-300 ease-out hover:-translate-y-1.5 hover:scale-[1.02] hover:border-indigo-400/40 hover:bg-neutral-900/90"
         >
           <div>
-            <h2 className="text-lg font-semibold text-white transition-colors group-hover:text-indigo-300">
+            <h2 className="text-lg font-semibold text-white transition-colors duration-300 group-hover:text-indigo-300">
               {idea.title}
             </h2>
             {idea.content && (
