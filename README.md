@@ -1,94 +1,109 @@
 # IdeaVault
-A full-stack idea management platform where creators can capture, organize, and revisit their ideas in a private workspace.
-Built with a modern Typescript stack using Next.js, Turborepo, Prisma and PostgreSQL.
 
-## Live Demo
-Coming soon
+Capture, tag, and organize your ideas — minimal by design.
+
+**Live → [idea-vault-api.vercel.app](https://idea-vault-api.vercel.app)**
+
+---
+
+## Screenshots
+
+![Dashboard](./screenshots/dashboard.png)
+
+![New Idea](./screenshots/new-idea.png)
+
+![Empty State](./screenshots/empty-state.png)
+
+---
 
 ## Features
-- Secure authentication with Clerk
-- Create, edit and delete ideas
-- Tag ideas for easy organization
-- Search ideaas instantly
-- Modern responsive UI
-- Private idea dashboard
-- Full-stack API with Next.js route handlers
-- Prisma ORM with PostgreSQL
-- Turborepo monorepo architecture
+
+- Create ideas with a title, content, and tags
+- Filter by tag, sort by date or alphabetically
+- Soft-delete with a recoverable trash bin
+- Secure auth with Clerk
+- Responsive masonry grid layout
+
+---
 
 ## Tech Stack
-Frontend
-- Next.js 16
-- React 19
-- TypeScript
-- TailwindCSS
-- Lucide Icons
-- Storybook
 
-Backend
-- Next.js Route Handlers
-- Prisma ORM
-- PostgresSQL (Neon)
+| | |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Monorepo | Turborepo + pnpm |
+| Auth | Clerk |
+| Database | Neon (PostgreSQL) + Prisma |
+| UI | shadcn/ui + Tailwind CSS |
+| Deployment | Vercel |
 
-Authentication
-- Clerk
+---
 
-Monorepo
-- Turborepo
-- pnpm workspaces
+## Getting Started
 
-Other
-- Zod validation
-- Vitest testing
-- Sentry monitoring
+### Prerequisites
 
-## Project Structure
-apps/
-  app/        ->  main Next.js application
-  web/        ->  landing website
-  email/      ->  email templates
-  storybook/  ->  UI component previews
+- Node.js 18+
+- pnpm 10+
+- A [Clerk](https://clerk.com) account
+- A [Neon](https://neon.tech) database
 
-packages/
-  database/        -> Prisma schema & client
-  design-system    -> shared UI components
-  auth/            -> authentication logic
-  analytics/       -> analytics provider
+### Install
 
-
-## Getting started
-Clone the repository
-
-git clone https://github.com/dhaanisi/IdeaVault
-
-Install dependencies
-
+```bash
+git clone https://github.com/dhaanisi/IdeaVault.git
+cd IdeaVault
 pnpm install
+```
 
-Run development server
+### Environment Variables
 
+```bash
+cp .env.example .env
+```
+
+Minimum required:
+
+```properties
+DATABASE_URL=""
+
+CLERK_SECRET_KEY=""
+CLERK_WEBHOOK_SECRET=""
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=""
+NEXT_PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
+NEXT_PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL="/"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL="/"
+
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+```
+
+### Database
+
+```bash
+pnpm --filter @repo/database db:generate
+pnpm --filter @repo/database db:push
+```
+
+### Run
+
+```bash
 pnpm dev
+```
 
-## Environment Variables
+App runs at `http://localhost:3000`.
 
-Create a '.env' file in the root directory
+---
 
-Example:
-DATABASE_URL=
+## Contributing
 
-CLERK_SECRET_KEY=
+1. Fork the repo
+2. Create a branch — `git checkout -b feat/your-feature`
+3. Commit — `git commit -m "feat: your feature"`
+4. Push — `git push origin feat/your-feature`
+5. Open a pull request
 
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-
-NEXT_PUBLIC_WEB_URL=
-
-## Future Improvements
-
-- AI- powered idea suggestions
-- Idea collaboration
-- Rich text editor
-- Idea sharing links
-- Mobile app
+---
 
 ## License
 
