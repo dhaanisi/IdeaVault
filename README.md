@@ -8,11 +8,11 @@ Capture, tag, and organize your ideas — minimal by design.
 
 ## Screenshots
 
+![Empty State](./screenshots/empty-state.png)
+
 ![Dashboard](./screenshots/dashboard.png)
 
 ![New Idea](./screenshots/new-idea.png)
-
-![Empty State](./screenshots/empty-state.png)
 
 ---
 
